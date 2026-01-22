@@ -5,6 +5,7 @@ Django==6.0.1
 filelock==3.20.3
 identify==2.6.16
 nodeenv==1.10.0
+pillow==12.1.0
 platformdirs==4.5.1
 pre_commit==4.5.1
 psycopg==3.3.2
