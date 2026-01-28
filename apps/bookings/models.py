@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.base.models import TimeStampModel
@@ -18,8 +19,9 @@ class Booking(TimeStampModel):
     class Status(models.IntegerChoices):
         CANCELLED = 0
         BOOKED = 1
+        PENDING = 2
 
-    status = models.IntegerField(choices=Status.choices, default=Status.BOOKED)
+    status = models.IntegerField(choices=Status.choices, default=Status.PENDING)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE, related_name="bookings")
 
@@ -41,6 +43,37 @@ class Seat(TimeStampModel):
     number = models.PositiveIntegerField()
 
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name="seats")
+
+    def clean(self):
+        super().clean()
+
+        booking_cinema = self.booking.slot.cinema
+
+        if self.row < 1 or self.row > booking_cinema.rows:
+            raise ValidationError(
+                f" Row must be greater than 0 and lesser than {booking_cinema.rows}"
+            )
+
+        if self.number < 1 or self.number > booking_cinema.seats_per_row:
+            raise ValidationError(
+                f"Seat number must be greater than 0 and less than {booking_cinema.seats_per_rows}"
+            )
+
+        alreadyBooked = (
+            Seat.objects.filter(
+                booking__slot_id=self.booking.slot_id,
+                booking__status=Booking.Status.BOOKED,
+                row=self.row,
+                number=self.number,
+            )
+            .exclude(pk=self.pk)
+            .exists()
+        )
+
+        if alreadyBooked:
+            raise ValidationError(
+                f"The Seat(Row : {self.row} Seat_Number : {self.number}) has been already booked"
+            )
 
     def __str__(self):
         return f"{self.row} - {self.number}"

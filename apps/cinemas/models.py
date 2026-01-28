@@ -18,7 +18,7 @@ class Cinema(TimeStampModel):
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=300)
     rows = models.PositiveIntegerField()
-    seats_per_rows = models.PositiveIntegerField()
+    seats_per_row = models.PositiveIntegerField()
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="cinemas")
 
     class Meta:
