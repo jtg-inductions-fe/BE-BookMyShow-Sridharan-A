@@ -1,8 +1,13 @@
-from rest_framework import routers
+from django.urls import path
 
-from .views import MovieViewSet
+from .views import (
+    MovieCinemaListView,
+    MovieDetailsView,
+    MovieListView,
+)
 
-router = routers.SimpleRouter()
-router.register(r"", MovieViewSet)
-
-urlpatterns = router.urls
+urlpatterns = [
+    path("", MovieListView.as_view(), name="movie-list"),
+    path("<slug:slug>/", MovieDetailsView.as_view(), name="movie-detail"),
+    path("<slug:slug>/cinemas/", MovieCinemaListView.as_view(), name="movie-cinemas"),
+]
