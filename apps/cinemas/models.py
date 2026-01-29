@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 
 from apps.base.models import City, TimeStampModel
 
@@ -20,6 +21,12 @@ class Cinema(TimeStampModel):
     rows = models.PositiveIntegerField()
     seats_per_row = models.PositiveIntegerField()
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="cinemas")
+    slug = models.SlugField(unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f"{self.name}-{self.city.name}")
+        super().save(*args, **kwargs)
 
     class Meta:
         constraints = [
