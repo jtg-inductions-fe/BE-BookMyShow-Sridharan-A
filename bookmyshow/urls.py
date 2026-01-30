@@ -28,7 +28,8 @@ urlpatterns = [
             [
                 path("", include("apps.users.urls")),
                 path("movies/", include("apps.movies.urls")),
-                path("cinemas/", include("apps.cinemas.urls"))
+                path("cinemas/", include("apps.cinemas.urls")),
+                path("slots/", include("apps.slots.urls"))
             ]
         ),
     ),
