@@ -1,8 +1,6 @@
-from django.utils import timezone
 from rest_framework import serializers
 
 from apps.base.serializers import CitySerializer
-from apps.slots.serializers import SlotSerializer
 
 from .models import Cinema
 
@@ -24,7 +22,7 @@ class CinemaSerializer(serializers.ModelSerializer):
 
 class CinemaSlotSerializer(serializers.ModelSerializer):
     city = CitySerializer()
-    slots = serializers.SerializerMethodField()
+    movies = serializers.SerializerMethodField()
 
     class Meta:
         model = Cinema
@@ -35,12 +33,28 @@ class CinemaSlotSerializer(serializers.ModelSerializer):
             "rows",
             "seats_per_row",
             "city",
-            "slots",
+            "movies",
         ]
 
-    def get_slots(self, obj):
-        active_slots = obj.slots.filter(date_time__gte=timezone.now()).order_by(
-            "date_time"
-        )
+    def get_movies(self, cinema):
+        movie_map = {}
 
-        return SlotSerializer(active_slots, many=True).data
+        for slot in cinema.active_slots:
+            movie = slot.movie
+
+            if movie.id not in movie_map:
+                movie_map[movie.id] = {
+                    "id": movie.id,
+                    "name": movie.name,
+                    "slug": movie.slug,
+                    "slots": [],
+                }
+            movie_map[movie.id]["slots"].append(
+                {
+                    "id": slot.id,
+                    "date_time": slot.date_time,
+                    "price": slot.price,
+                    "language": slot.language.name,
+                }
+            )
+        return list(movie_map.values())
