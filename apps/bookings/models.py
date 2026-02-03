@@ -1,9 +1,9 @@
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 
 from apps.base.models import TimeStampModel
 from apps.slots.models import Slot
-from apps.users.models import User
 
 
 class Booking(TimeStampModel):
@@ -22,7 +22,9 @@ class Booking(TimeStampModel):
         PENDING = 2
 
     status = models.IntegerField(choices=Status.choices, default=Status.PENDING)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bookings"
+    )
     slot = models.ForeignKey(Slot, on_delete=models.CASCADE, related_name="bookings")
 
     def __str__(self):
@@ -31,7 +33,7 @@ class Booking(TimeStampModel):
 
 class Seat(TimeStampModel):
     """
-    BookingSeat model linking seats to a booking and slot.
+    Seat model linking seats to a booking and slot.
 
     Attributes:
         row (str): Seat row identifier (e.g., A, B, C).
@@ -56,10 +58,10 @@ class Seat(TimeStampModel):
 
         if self.number < 1 or self.number > booking_cinema.seats_per_row:
             raise ValidationError(
-                f"Seat number must be greater than 0 and less than {booking_cinema.seats_per_rows}"
+                f"Seat number must be greater than 0 and less than {booking_cinema.seats_per_row}"
             )
 
-        alreadyBooked = (
+        already_booked = (
             Seat.objects.filter(
                 booking__slot_id=self.booking.slot_id,
                 booking__status=Booking.Status.BOOKED,
@@ -70,7 +72,7 @@ class Seat(TimeStampModel):
             .exists()
         )
 
-        if alreadyBooked:
+        if already_booked:
             raise ValidationError(
                 f"The Seat(Row : {self.row} Seat_Number : {self.number}) has been already booked"
             )

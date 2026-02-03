@@ -12,11 +12,11 @@ class Slot(TimeStampModel):
     Slot model representing a movie show timing in a cinema.
 
     Attributes:
-        date (date): Date on which the movie is shown.
-        start_time (time): Show start time.
+        date_time (datetime): Date and time when the movie is shown.
         price (int): Ticket price for the slot.
         movie (ForeignKey): Movie being shown.
         cinema (ForeignKey): Cinema where the movie is shown.
+        language (ForeignKey): Language in which the movie is shown.
     """
 
     date_time = models.DateTimeField()
@@ -45,7 +45,7 @@ class Slot(TimeStampModel):
                 "Cannot create slot for a movie before it's release date"
             )
 
-        if not self.movie.language.contains(self.language):
+        if not self.movie.language.filter(pk=self.language.pk).exists():
             raise ValidationError(
                 "Cannot create slot for a movie with language which is not in movie's languages"
             )
@@ -77,6 +77,10 @@ class Slot(TimeStampModel):
                 raise ValidationError(
                     f"Slot overlaps with next movie starting at {next_slot.date_time}."
                 )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.movie.name} - {self.date_time}"
