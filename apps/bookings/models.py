@@ -77,5 +77,9 @@ class Seat(TimeStampModel):
                 f"The Seat(Row : {self.row} Seat_Number : {self.number}) has been already booked"
             )
 
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.row} - {self.number}"
