@@ -22,14 +22,6 @@ class RegisterAPIView(APIView):
             status=status.HTTP_201_CREATED,
         )
 
-    # def get(self, request):
-    #     return response.Response({
-    #         'S'
-    #     }, status=status.HTTP_200_OK)
-
-    # def patch(self, request):
-    #     return response.Response({'P'}, status=status.HTTP_200_OK)
-
 
 class LoginAPIView(APIView):
     permission_classes = [permissions.AllowAny]

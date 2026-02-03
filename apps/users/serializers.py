@@ -30,11 +30,8 @@ class LoginSerializer(serializers.Serializer):
 
         user = authenticate(email=email, password=password)
 
-        if not user:
+        if not user or not user.is_active:
             raise serializers.ValidationError("Invalid credentials")
-
-        if not user.is_active:
-            raise serializers.ValidationError("User account is disabled")
 
         attrs["user"] = user
         return attrs
