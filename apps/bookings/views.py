@@ -33,7 +33,8 @@ class UserBookingListView(APIView):
     def get(self, request):
         bookings = (
             Booking.objects.filter(user=request.user)
-            .prefetch_related("seats", "slot")
+            .select_related("slot")
+            .prefetch_related("seats")
             .order_by("-created_at")
         )
 

@@ -52,7 +52,7 @@ class BookingCreateSerializer(serializers.Serializer):
             booking = Booking.objects.create(
                 user=user,
                 slot_id=slot_id,
-                status=Booking.Status.PENDING,
+                status=Booking.Status.BOOKED,
             )
 
             for seat in seats_data:
@@ -63,7 +63,6 @@ class BookingCreateSerializer(serializers.Serializer):
                 )
                 seat_obj.save()
 
-            booking.status = Booking.Status.BOOKED
             booking.save()
 
         return booking
