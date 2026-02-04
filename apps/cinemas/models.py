@@ -25,7 +25,13 @@ class Cinema(TimeStampModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(f"{self.name}-{self.city.name}")
+            base = slugify(f"{self.name}-{self.city.name}")
+            slug = base
+            i = 1
+            while self.__class__.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     class Meta:

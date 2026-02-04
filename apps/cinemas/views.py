@@ -11,7 +11,7 @@ from .serializers import CinemaSerializer, CinemaSlotSerializer
 
 
 class CinemaListView(ListAPIView):
-    queryset = Cinema.objects.all()
+    queryset = Cinema.objects.all().select_related("city")
     serializer_class = CinemaSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
@@ -24,11 +24,13 @@ class CinemaDetailsView(RetrieveAPIView):
     lookup_field = "slug"
 
     def get_queryset(self):
-        active_slots = Slot.objects.filter(
-            date_time__gte=timezone.now()
-        ).select_related(
-            "movie",
-            "language",
+        active_slots = (
+            Slot.objects.filter(date_time__gte=timezone.now())
+            .select_related(
+                "movie",
+                "language",
+            )
+            .order_by("date_time")
         )
 
         return Cinema.objects.prefetch_related(
