@@ -29,7 +29,13 @@ class Movie(TimeStampModel):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            base = slugify(self.name) or "movie"
+            slug = base
+            i = 1
+            while self.__class__.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
         super().save(*args, **kwargs)
 
     def __str__(self):

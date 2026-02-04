@@ -12,7 +12,7 @@ from .serializers import MovieCinemaSerializer, MovieSerializer
 
 
 class MovieListView(ListAPIView):
-    queryset = Movie.objects.all()
+    queryset = queryset = Movie.objects.all().prefetch_related("language", "genre")
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
@@ -20,7 +20,7 @@ class MovieListView(ListAPIView):
 
 
 class MovieDetailsView(RetrieveAPIView):
-    queryset = Movie.objects.all()
+    queryset = queryset = Movie.objects.all().prefetch_related("language", "genre")
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
     lookup_field = "slug"
@@ -32,11 +32,13 @@ class MovieCinemaListView(RetrieveAPIView):
     lookup_field = "slug"
 
     def get_queryset(self):
-        active_slots = Slot.objects.filter(
-            date_time__gte=timezone.now()
-        ).select_related(
-            "cinema",
-            "language",
+        active_slots = (
+            Slot.objects.filter(date_time__gte=timezone.now())
+            .select_related(
+                "cinema",
+                "language",
+            )
+            .order_by("date_time")
         )
 
         return Movie.objects.prefetch_related(

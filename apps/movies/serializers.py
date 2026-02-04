@@ -42,8 +42,8 @@ class MovieCinemaSerializer(serializers.ModelSerializer):
 
     def get_cinemas(self, movie):
         cinema_map = {}
-
-        for slot in movie.active_slots:
+        slots = getattr(movie, "active_slots", [])
+        for slot in slots:
             cinema = slot.cinema
 
             if cinema.id not in cinema_map:
