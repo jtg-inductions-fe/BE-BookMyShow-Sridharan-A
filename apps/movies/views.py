@@ -8,19 +8,25 @@ from apps.slots.models import Slot
 
 from .filters import MovieFilter
 from .models import Movie
+from .pagination import MovieCursorPagination
 from .serializers import MovieCinemaSerializer, MovieSerializer
 
 
 class MovieListView(ListAPIView):
-    queryset = queryset = Movie.objects.all().prefetch_related("language", "genre")
+    queryset = (
+        Movie.objects.all()
+        .prefetch_related("language", "genre")
+        .order_by("-release_date")
+    )
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_class = MovieFilter
+    pagination_class = MovieCursorPagination
 
 
 class MovieDetailsView(RetrieveAPIView):
-    queryset = queryset = Movie.objects.all().prefetch_related("language", "genre")
+    queryset = Movie.objects.all().prefetch_related("language", "genre")
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
     lookup_field = "slug"
