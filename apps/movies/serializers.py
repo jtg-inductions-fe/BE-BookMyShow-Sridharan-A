@@ -24,7 +24,7 @@ class MovieSerializer(serializers.ModelSerializer):
         ]
 
 
-class MovieCinemaSerializer(serializers.ModelSerializer):
+class MovieSlotsPerCinemaSerializer(serializers.ModelSerializer):
     cinemas = serializers.SerializerMethodField()
 
     class Meta:

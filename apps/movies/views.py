@@ -9,7 +9,7 @@ from apps.slots.models import Slot
 from .filters import MovieFilter
 from .models import Movie
 from .pagination import MovieCursorPagination
-from .serializers import MovieCinemaSerializer, MovieSerializer
+from .serializers import MovieSerializer, MovieSlotsPerCinemaSerializer
 
 
 class MovieListView(ListAPIView):
@@ -32,8 +32,8 @@ class MovieDetailsView(RetrieveAPIView):
     lookup_field = "slug"
 
 
-class MovieCinemaListView(RetrieveAPIView):
-    serializer_class = MovieCinemaSerializer
+class MovieSlotsPerCinemaListView(RetrieveAPIView):
+    serializer_class = MovieSlotsPerCinemaSerializer
     permission_classes = [AllowAny]
     lookup_field = "slug"
 
