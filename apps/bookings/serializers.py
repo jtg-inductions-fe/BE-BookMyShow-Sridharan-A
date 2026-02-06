@@ -16,16 +16,14 @@ class SeatSerializer(serializers.ModelSerializer):
 class BookingSerializer(serializers.ModelSerializer):
     seats = SeatSerializer(many=True)
     slot_id = serializers.IntegerField(source="slot.id")
+    total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
-        fields = [
-            "id",
-            "slot_id",
-            "status",
-            "created_at",
-            "seats",
-        ]
+        fields = ["id", "slot_id", "status", "created_at", "seats", "total_price"]
+
+    def get_total_price(self, booking):
+        return booking.seats.count() * booking.slot.price
 
 
 class BookingCreateSerializer(serializers.Serializer):

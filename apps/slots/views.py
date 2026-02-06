@@ -28,6 +28,7 @@ class BookedSeats(ListAPIView):
 
     permission_classes = [AllowAny]
     serializer_class = SeatSerializer
+    pagination_class = None
 
     def get_queryset(self):
         slot_id = self.kwargs.get("pk")
