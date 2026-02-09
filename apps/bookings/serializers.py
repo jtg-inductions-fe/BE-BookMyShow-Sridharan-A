@@ -8,12 +8,32 @@ from .models import Booking, Seat
 
 
 class SeatSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Seat model
+
+    Fields:
+        "row": int,
+        "number": int,
+    """
+
     class Meta:
         model = Seat
         fields = ["row", "number"]
 
 
 class BookingSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Booking model
+
+    Fields:
+        "id": int,
+        "slot_id": int,
+        "status": int,
+        "created_at": datetime,
+        "seats": [seat],
+        "total_price": decimal
+    """
+
     seats = SeatSerializer(many=True)
     slot_id = serializers.IntegerField(source="slot.id")
     total_price = serializers.SerializerMethodField()
@@ -27,6 +47,14 @@ class BookingSerializer(serializers.ModelSerializer):
 
 
 class BookingCreateSerializer(serializers.Serializer):
+    """
+    Serializer for Booking creation
+
+    Fields:
+        "slot_id": int,
+        "seats": [seat],
+    """
+
     slot_id = serializers.IntegerField()
     seats = SeatSerializer(many=True)
 

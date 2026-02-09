@@ -11,6 +11,31 @@ from .serializers import BookingCreateSerializer, BookingSerializer
 
 
 class BookingCreateView(APIView):
+    """
+    API Endpoint for new booking
+
+    Endpoint:
+        - POST /api/bookings/
+
+    Permissions:
+        - IsAuthenticated
+
+    Response:
+        201 Created
+        {
+            "results": [
+                {
+                    "id": int,
+                    "slot_id": int,
+                    "status": string,
+                    "created_at": datetime,
+                    "seats": [seat],
+                    "total_price": decimal
+                }
+            ]
+        }
+    """
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -28,6 +53,36 @@ class BookingCreateView(APIView):
 
 
 class UserBookingListView(APIView):
+    """
+    API Endpoint for booking history of user
+
+    Endpoint:
+        - GET /api/bookings/history/
+
+    Permissions:
+        - IsAuthenticated
+
+    Response:
+        200 OK
+        {
+            "results": [
+                {
+                    "id": int,
+                    "slot_id": int,
+                    "status": string,
+                    "created_at": datetime,
+                    "seats": [seat],
+                    "total_price": decimal
+                }
+            ]
+        }
+
+    Errors:
+        401 Unauthorized:
+            - Authentication credentials were not provided
+            - Invalid or expired token
+    """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -42,6 +97,36 @@ class UserBookingListView(APIView):
 
 
 class BookingCancelView(APIView):
+    """
+    API Endpoint for cancelling a booking
+
+    Endpoint:
+        - PATCH /api/bookings/<int:pk>/cancel/
+
+    Permissions:
+        - IsAuthenticated
+
+    Response:
+        200 Ok
+        {
+            "id": int,
+            "status" string
+        }
+
+    Errors:
+        400 Bad Request:
+            - Bookings can only be cancelled at least 4 hours before showtime
+
+        401 Unauthorized:
+            - Authentication credentials were not provided
+            - Invalid or expired token
+
+        404 Not found:
+            - Booking not found
+
+
+    """
+
     permission_classes = [IsAuthenticated]
 
     def patch(self, request, pk):
