@@ -6,6 +6,19 @@ from .models import Cinema
 
 
 class CinemaSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Cinema model
+
+    Fields:
+        "id": int,
+        "name": string,
+        "location": string,
+        "rows": int,
+        "seats_per_row": int,
+        "city": string,
+        "slug": string
+    """
+
     city = CitySerializer()
 
     class Meta:
@@ -22,6 +35,20 @@ class CinemaSerializer(serializers.ModelSerializer):
 
 
 class CinemaSlotSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Cinema Details and Movie Slots
+
+    Fields:
+        "id": int,
+        "name": string,
+        "location": string,
+        "rows": int,
+        "seats_per_row": int,
+        "city": string,
+        "movies": [movie[slots]]
+
+    """
+
     city = CitySerializer()
     movies = serializers.SerializerMethodField()
 

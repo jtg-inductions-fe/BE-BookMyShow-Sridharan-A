@@ -12,6 +12,39 @@ from .serializers import CinemaSerializer, CinemaSlotSerializer
 
 
 class CinemaListView(ListAPIView):
+    """
+    API endpoint for listing cinemas
+
+    Endpoint:
+        - GET /api/cinemas/
+
+    Permissons:
+        - Allowany
+
+    Description:
+    - Returns list of cinemas
+    - Supports filtering by city
+    - Cursor paginated
+
+    Response:
+        200 OK
+        {
+            "next": null,
+            "previous": null,
+            "results": [
+                {
+                    "id": int,
+                    "name": string,
+                    "location": string,
+                    "rows": int,
+                    "seats_per_row": int,
+                    "city": string,
+                    "slug": string
+                }
+            ]
+        }
+    """
+
     queryset = Cinema.objects.all().select_related("city")
     serializer_class = CinemaSerializer
     permission_classes = [AllowAny]
@@ -21,6 +54,32 @@ class CinemaListView(ListAPIView):
 
 
 class CinemaDetailsView(RetrieveAPIView):
+    """
+    API Endpoint for retrieving details of a single cinema with slots
+
+    Endpoint:
+        - GET /api/cinemas/<slug>/slots
+
+    Permissions:
+        - Allowany
+
+    Response:
+        200 OK
+        {
+            "id": int,
+            "name": string,
+            "location": string,
+            "duration": string,
+            "rows": int,
+            "seats_per_row": int,
+            "movies": [slots]
+        }
+
+    Errors:
+        404 Not Found:
+            - Cinema Not Found
+    """
+
     serializer_class = CinemaSlotSerializer
     permission_classes = [AllowAny]
     lookup_field = "slug"
