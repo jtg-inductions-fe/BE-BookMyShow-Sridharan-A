@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, response, status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -29,6 +30,16 @@ class RegisterAPIView(APIView):
 
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(
+        summary="Register a new user",
+        description="Register a new user using email, password and firstname",
+        request=UserRegisterSerializer,
+        responses={
+            201: {"type": "object", "properties": {"message": {"type": "string"}}},
+            400: {"type": "object", "properties": {"message": {"type": "string"}}},
+        },
+        tags=["auth"],
+    )
     def post(self, request):
         """
         - Register a new user
@@ -68,6 +79,22 @@ class LoginAPIView(APIView):
 
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(
+        summary="User login",
+        description="Login user using email and password",
+        request=LoginSerializer,
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "access": {"type": "string"},
+                    "refresh": {"type": "string"},
+                },
+            },
+            400: {"type": "object", "properties": {"message": {"type": "string"}}},
+        },
+        tags=["auth"],
+    )
     def post(self, request):
         """
         - Authenticate user
@@ -139,10 +166,30 @@ class UserProfileAPIView(APIView):
 
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        summary="User Profile",
+        description="Fetch a user details",
+        request=UserProfileSerializer,
+        responses={
+            200: {"type": "object", "properties": {"user": {"type": "object"}}},
+            401: {"type": "object", "properties": {"message": {"type": "string"}}},
+        },
+        tags=["auth"],
+    )
     def get(self, request):
         serializer = UserProfileSerializer(request.user)
-        return response.Response(serializer.data)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
 
+    @extend_schema(
+        summary="Update user details",
+        description="Update user details like first_name, last_name, phone_number...",
+        request=UserProfileSerializer,
+        responses={
+            200: {"type": "object", "properties": {"user": {"type": "object"}}},
+            401: {"type": "object", "properties": {"message": {"type": "string"}}},
+        },
+        tags=["auth"],
+    )
     def patch(self, request):
         serializer = UserProfileSerializer(
             request.user,
@@ -151,4 +198,4 @@ class UserProfileAPIView(APIView):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return response.Response(serializer.data)
+        return response.Response(serializer.data, status=status.HTTP_200_OK)
