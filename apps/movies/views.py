@@ -13,6 +13,49 @@ from .serializers import MovieSerializer, MovieSlotsPerCinemaSerializer
 
 
 class MovieListView(ListAPIView):
+    """
+    API endpoint for listing movies
+
+    Endpoint:
+        - GET /api/movies/
+
+    Permissons:
+        - Allowany
+
+    Description:
+    - Returns list of movies
+    - Supports filtering by genre, language
+    - Cursor paginated
+
+    Response:
+        200 OK
+        {
+            "next": null,
+            "previous": null,
+            "results": [
+                {
+                    "id": 0,
+                    "name": string,
+                    "description": string,
+                    "duration": string",
+                    "poster": string",
+                    "release_date": date,
+                    "language": [
+                        {
+                        "name": string
+                        }
+                    ],
+                    "genre": [
+                        {
+                        "name": string
+                        }
+                    ],
+                    "slug": string
+                }
+            ]
+        }
+    """
+
     queryset = (
         Movie.objects.all()
         .prefetch_related("language", "genre")
@@ -26,6 +69,42 @@ class MovieListView(ListAPIView):
 
 
 class MovieDetailsView(RetrieveAPIView):
+    """
+    API Endpoint for retrieving details of a single movie
+
+    Endpoint:
+        - GET /api/movies/<slug>
+
+    Permissions:
+        - Allowany
+
+    Response:
+        200 OK
+        {
+            "id": int,
+            "name": string,
+            "description": string,
+            "duration": string,
+            "poster": string,
+            "release_date": date,
+            "language": [
+                {
+                    "name": string
+                }
+            ],
+            "genre": [
+                {
+                    "name": string
+                }
+            ],
+            "slug": string
+        }
+
+    Errors:
+        404 Not Found:
+            - Movie Not Found
+    """
+
     queryset = Movie.objects.all().prefetch_related("language", "genre")
     serializer_class = MovieSerializer
     permission_classes = [AllowAny]
@@ -33,6 +112,30 @@ class MovieDetailsView(RetrieveAPIView):
 
 
 class MovieSlotsPerCinemaListView(RetrieveAPIView):
+    """
+    API Endpoint for retrieving slots for a single movie grouped by cinemas
+
+    Endpoint:
+        - GET /api/movies/<slug>/slots/
+
+    Permissions:
+        - Allowany
+
+    Response:
+        200 OK
+        {
+            "id": int,
+            "name": string,
+            "description": string,
+            "duration": string,
+            "poster": string,
+            "release_date": date,
+            "slug": string,
+            "cinemas": [slots]
+        }
+
+    """
+
     serializer_class = MovieSlotsPerCinemaSerializer
     permission_classes = [AllowAny]
     lookup_field = "slug"

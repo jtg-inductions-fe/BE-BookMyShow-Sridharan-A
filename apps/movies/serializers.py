@@ -6,6 +6,29 @@ from .models import Movie
 
 
 class MovieSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Movie model
+
+    Fields:
+        "id": int,
+        "name": string,
+        "description": string,
+        "duration": time,
+        "poster": string,
+        "release_date": date,
+        "language": [
+            {
+            "name": string
+            }
+        ],
+        "genre": [
+            {
+            "name": string
+            }
+        ],
+        "slug": string
+    """
+
     language = LanguageSerializer(many=True)
     genre = GenreSerializer(many=True)
 
@@ -25,6 +48,20 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 class MovieSlotsPerCinemaSerializer(serializers.ModelSerializer):
+    """
+    Serializer for Movie Slots
+
+    Fields:
+        "id": int,
+        "name": string,
+        "description": string,
+        "duration": time,
+        "poster": string,
+        "release_date": date,
+        "slug": string,
+        "cinemas": [cinema[slots]],
+    """
+
     cinemas = serializers.SerializerMethodField()
 
     class Meta:
