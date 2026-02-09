@@ -7,6 +7,17 @@ from .models import Slot
 
 
 class SlotSerializer(ModelSerializer):
+    """
+    Serializer for Slot model
+
+    Fields:
+        "id": int,
+        "date_time": datetime,
+        "price": decimal,
+        "movie": object,
+        "language": string,
+    """
+
     movie = MovieSerializer()
     language = LanguageSerializer()
 

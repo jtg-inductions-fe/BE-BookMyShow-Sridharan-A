@@ -6,6 +6,26 @@ from apps.bookings.serializers import SeatSerializer
 
 
 class BookedSeats(ListAPIView):
+    """
+    API endpoint for returning booked seats in a slot
+
+    Endpoint:
+        - GET /api/slots/<int:pk>/
+
+    Permissions:
+        - Allowany
+
+    Response:
+        200 OK
+        {
+            seats: [{"row": int, "number": int}]
+        }
+
+    Errors:
+        404 Not Found
+            - Slot not found
+    """
+
     permission_classes = [AllowAny]
     serializer_class = SeatSerializer
 
