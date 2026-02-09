@@ -6,9 +6,33 @@ from .serializers import LoginSerializer, UserProfileSerializer, UserRegisterSer
 
 
 class RegisterAPIView(APIView):
+    """
+    API endpoint for user registration.
+
+    Endpoints:
+        - POST /api/auth/register/
+
+    Permissons:
+        - Alllowany
+
+    Response:
+        201 Created
+        {
+            "detail": User registered successfully,
+            "access": string
+        }
+
+    Errors:
+        400 Bad Request:
+            - Validation errors
+    """
+
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        """
+        - Register a new user
+        """
         serializer = UserRegisterSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -20,9 +44,35 @@ class RegisterAPIView(APIView):
 
 
 class LoginAPIView(APIView):
+    """
+    API endpoint user login
+
+    Endpoints:
+        - POST /api/auth/login/
+
+    Permissions:
+        - AllowAny
+
+    Response:
+        200 OK
+        {
+            "detail": User logged in successfully,
+            "access": string
+        }
+
+    Errors:
+        401 Unauthorized:
+            - Authentication credentials were not provided
+            - Invalid or expired token
+    """
+
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
+        """
+        - Authenticate user
+        - Returns access and refresh token for user if the credentials are valid
+        """
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -40,6 +90,53 @@ class LoginAPIView(APIView):
 
 
 class UserProfileAPIView(APIView):
+    """
+    API Endpoints for accessing and updating current user
+
+    Permissions:
+        - IsAuthenticated
+
+    Allowed Endpoints:
+        GET /api/auth/user/
+        PATCH /api/auth/user/
+
+    GET:
+        - Returns current user details
+
+        Response:
+            200 OK
+            {
+                "email": string,
+                "first_name": string,
+                "last_name": string,
+                "phone_number": string
+            }
+
+    PATCH:
+        - Updates user profile fields
+
+        Request Body:
+            {
+                "first_name": string,
+                "last_name": string,
+                "phone_number": string
+            }
+
+        Response:
+            200 OK
+            {
+                "email": string
+                "first_name": string,
+                "last_name": string,
+                "phone_number": string
+            }
+
+    Errors:
+        401 Unauthorized:
+            - Authentication credentials were not provided
+            - Invalid or expired token
+    """
+
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request):

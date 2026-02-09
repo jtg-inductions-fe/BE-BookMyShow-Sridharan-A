@@ -5,6 +5,17 @@ from .models import User
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user model
+
+    Fields:
+        "email": string,
+        "first_name": string,
+        "last_name": string,
+        "phone_number": string,
+        "password": string
+    """
+
     class Meta:
         model = User
         fields = ["email", "first_name", "last_name", "phone_number", "password"]
@@ -21,6 +32,14 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
+    """
+    Serializer for user login
+
+    Fields:
+        "email": string,
+        "password": string
+    """
+
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
@@ -38,6 +57,17 @@ class LoginSerializer(serializers.Serializer):
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    """
+    Serializer for user profile
+
+    Fields:
+        "email": string,
+        "first_name": string,
+        "last_name": string,
+        "phone_number": string,
+        "password": string
+    """
+
     class Meta:
         model = User
         fields = ["email", "first_name", "last_name", "phone_number"]
