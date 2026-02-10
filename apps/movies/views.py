@@ -1,3 +1,6 @@
+from datetime import datetime, time
+
+from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
@@ -142,8 +145,33 @@ class MovieSlotsPerCinemaListView(RetrieveAPIView):
     lookup_field = "slug"
 
     def get_queryset(self):
+        date = self.request.query_params.get("date")
+        today = timezone.localdate()
+
+        if date:
+            selected_date = datetime.strptime(date, "%Y-%m-%d").date()
+        else:
+            selected_date = timezone.localdate()
+
+        if selected_date < today:
+            raise ValidationError("Date cannot be in the past")
+
+        day_start = timezone.make_aware(datetime.combine(selected_date, time.min))
+
+        day_end = timezone.make_aware(datetime.combine(selected_date, time.max))
+
+        if selected_date == timezone.localdate():
+            slot_filter = {
+                "date_time__gte": timezone.now(),
+                "date_time__lte": day_end,
+            }
+        else:
+            slot_filter = {
+                "date_time__range": (day_start, day_end),
+            }
+
         active_slots = (
-            Slot.objects.filter(date_time__gte=timezone.now())
+            Slot.objects.filter(**slot_filter)
             .select_related(
                 "cinema",
                 "language",
