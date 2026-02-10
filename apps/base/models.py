@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -32,6 +33,19 @@ class Language(TimeStampModel):
 
     name = models.CharField(max_length=50, unique=True)
 
+    def clean(self):
+        super().clean()
+
+        value = self.name.lower()
+
+        if Language.objects.filter(name=value).exclude(pk=self.pk).exists():
+            raise ValidationError("The Language already exists")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        self.name = self.name.lower()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -47,6 +61,19 @@ class Genre(TimeStampModel):
 
     name = models.CharField(max_length=20, unique=True)
 
+    def clean(self):
+        super().clean()
+
+        value = self.name.lower()
+
+        if Genre.objects.filter(name=value).exclude(pk=self.pk).exists():
+            raise ValidationError("The Genre already exists")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        self.name = self.name.lower()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -61,6 +88,19 @@ class City(TimeStampModel):
     """
 
     name = models.CharField(max_length=50, unique=True)
+
+    def clean(self):
+        super().clean()
+
+        value = self.name.lower()
+
+        if City.objects.filter(name=value).exclude(pk=self.pk).exists():
+            raise ValidationError("The City already exists")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        self.name = self.name.lower()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
