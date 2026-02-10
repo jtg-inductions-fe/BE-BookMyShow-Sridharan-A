@@ -57,7 +57,8 @@ class MovieListView(ListAPIView):
     """
 
     queryset = (
-        Movie.objects.all()
+        Movie.objects.filter(slots__date_time__gte=timezone.now())
+        .distinct()
         .prefetch_related("language", "genre")
         .order_by("-release_date")
     )
