@@ -1,7 +1,12 @@
 from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
 
-from .views import LoginAPIView, RegisterAPIView, UserProfileAPIView
+from .views import (
+    LoginAPIView,
+    RegisterAPIView,
+    UserBookingListView,
+    UserProfileAPIView,
+)
 
 urlpatterns = [
     path("auth/register/", RegisterAPIView.as_view(), name="user_register"),
@@ -15,4 +20,5 @@ urlpatterns = [
         "auth/logout/", jwt_views.TokenBlacklistView.as_view(), name="token_blacklist"
     ),
     path("user/", UserProfileAPIView.as_view(), name="user_profile"),
+    path("user/history/", UserBookingListView.as_view(), name="user_bookings"),
 ]
