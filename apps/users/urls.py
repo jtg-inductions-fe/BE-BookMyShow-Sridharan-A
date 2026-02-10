@@ -1,10 +1,11 @@
 from django.urls import path
 from rest_framework_simplejwt import views as jwt_views
 
+from apps.bookings.views import UserBookingListView
+
 from .views import (
     LoginAPIView,
     RegisterAPIView,
-    UserBookingListView,
     UserProfileAPIView,
 )
 
