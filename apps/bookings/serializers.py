@@ -75,9 +75,10 @@ class BookingCreateSerializer(serializers.Serializer):
         seats_data = validated_data["seats"]
 
         with transaction.atomic():
+            slot = Slot.objects.select_for_update().get(id=slot_id)
             booking = Booking.objects.create(
                 user=user,
-                slot_id=slot_id,
+                slot=slot,
                 status=Booking.Status.BOOKED,
             )
 

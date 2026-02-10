@@ -93,7 +93,9 @@ class UserBookingListView(APIView):
             .order_by("-created_at")
         )
 
-        return Response(BookingSerializer(bookings, many=True).data)
+        return Response(
+            BookingSerializer(bookings, many=True).data, status=status.HTTP_200_OK
+        )
 
 
 class BookingCancelView(APIView):
