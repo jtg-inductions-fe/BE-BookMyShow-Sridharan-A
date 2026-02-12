@@ -88,6 +88,8 @@ class MovieSlotsPerCinemaSerializer(serializers.ModelSerializer):
                     "id": cinema.id,
                     "name": cinema.name,
                     "location": cinema.location,
+                    "rows": cinema.rows,
+                    "seats_per_row": cinema.seats_per_row,
                     "slug": cinema.slug,
                     "slots": [],
                 }
