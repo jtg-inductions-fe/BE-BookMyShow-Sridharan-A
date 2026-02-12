@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 
 from apps.base.models import Genre, Language, TimeStampModel
 
@@ -24,6 +25,18 @@ class Movie(TimeStampModel):
     release_date = models.DateField()
     language = models.ManyToManyField(Language, related_name="movies")
     genre = models.ManyToManyField(Genre, related_name="movies")
+    slug = models.SlugField(unique=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(self.name) or "movie"
+            slug = base
+            i = 1
+            while self.__class__.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug = f"{base}-{i}"
+                i += 1
+            self.slug = slug
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
