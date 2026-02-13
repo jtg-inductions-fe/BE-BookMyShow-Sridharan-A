@@ -13,12 +13,24 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         "first_name": string,
         "last_name": string,
         "phone_number": string,
-        "password": string
+        "profile_picture": string,
+        "password": string,
+        "confirm_password": string,
     """
+
+    confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ["email", "first_name", "last_name", "phone_number", "password"]
+        fields = [
+            "email",
+            "first_name",
+            "last_name",
+            "phone_number",
+            "profile_picture",
+            "password",
+            "confirm_password",
+        ]
         extra_kwargs = {"password": {"write_only": True}}
 
     def validate_email(self, value):
@@ -27,7 +39,17 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("The email already exists")
         return value
 
+    def validate(self, attrs):
+        password = attrs.get("password")
+        confirm_password = attrs.get("confirm_password")
+
+        if password != confirm_password:
+            raise serializers.ValidationError("Passwords do not match")
+
+        return attrs
+
     def create(self, validated_data):
+        validated_data.pop("confirm_password")
         return User.objects.create_user(**validated_data)
 
 
@@ -70,5 +92,5 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ["email", "first_name", "last_name", "phone_number"]
+        fields = ["email", "first_name", "last_name", "phone_number", "profile_picture"]
         read_only_fields = ["email"]

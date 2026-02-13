@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from apps.base.serializers import GenreSerializer, LanguageSerializer
+from apps.bookings.models import Booking, Seat
 
 from .models import Movie
 
@@ -82,7 +83,12 @@ class MovieSlotsPerCinemaSerializer(serializers.ModelSerializer):
         slots = getattr(movie, "active_slots", [])
         for slot in slots:
             cinema = slot.cinema
+            booked_seats = Seat.objects.filter(
+                booking__slot__id=slot.id, booking__status=Booking.Status.BOOKED
+            ).count()
+            total_seats = cinema.rows * cinema.seats_per_row
 
+            booked_seats_percentage = (booked_seats / total_seats) * 100
             if cinema.id not in cinema_map:
                 cinema_map[cinema.id] = {
                     "id": cinema.id,
@@ -100,6 +106,7 @@ class MovieSlotsPerCinemaSerializer(serializers.ModelSerializer):
                     "date_time": slot.date_time,
                     "price": slot.price,
                     "language": {"name": slot.language.name},
+                    "booked_seats_percentage": booked_seats_percentage,
                 }
             )
 
