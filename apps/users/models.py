@@ -1,8 +1,15 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.validators import RegexValidator
 from django.db import models
 
 from apps.base.models import TimeStampModel
 from apps.users.managers import UserManager
+
+phone_number_validator = RegexValidator(
+    r"^[6-9]\d{9}$",
+    message="Enter a valid phone number in the format 9876543210 (10 digits starting with 6, 7, 8, or 9)",
+    code="Invalid phone number",
+)
 
 
 class User(TimeStampModel, AbstractBaseUser, PermissionsMixin):
@@ -25,7 +32,12 @@ class User(TimeStampModel, AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(max_length=255, unique=True)
     first_name = models.CharField(max_length=64)
     last_name = models.CharField(max_length=64, blank=True)
-    phone_number = models.CharField(max_length=10, blank=True)
+    phone_number = models.CharField(
+        max_length=10, blank=True, validators=[phone_number_validator]
+    )
+    profile_picture = models.ImageField(
+        upload_to="profile_pictures", blank=True, null=True
+    )
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)

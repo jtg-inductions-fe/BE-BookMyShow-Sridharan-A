@@ -19,9 +19,8 @@ class Booking(TimeStampModel):
     class Status(models.IntegerChoices):
         CANCELLED = 0
         BOOKED = 1
-        PENDING = 2
 
-    status = models.IntegerField(choices=Status.choices, default=Status.PENDING)
+    status = models.IntegerField(choices=Status.choices)
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="bookings"
     )

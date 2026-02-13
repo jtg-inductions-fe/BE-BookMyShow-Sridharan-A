@@ -69,7 +69,7 @@ class UserBookingListView(APIView):
                 {
                     "id": int,
                     "slot_id": int,
-                    "status": string,
+                    "status": int,
                     "created_at": datetime,
                     "seats": [seat],
                     "total_price": decimal
