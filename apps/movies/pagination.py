@@ -1,6 +1,5 @@
-from rest_framework.pagination import CursorPagination
+from apps.base.pagination import BaseCursorPagination
 
 
-class MovieCursorPagination(CursorPagination):
-    page_size = 10
-    ordering = "-created_at"
+class MovieCursorPagination(BaseCursorPagination):
+    ordering = ("-release_date", "-id")

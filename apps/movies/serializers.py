@@ -82,7 +82,10 @@ class MovieSlotsPerCinemaSerializer(serializers.ModelSerializer):
         slots = getattr(movie, "active_slots", [])
         for slot in slots:
             cinema = slot.cinema
+            booked_seats = getattr(slot, "booked_seats", 0)
+            total_seats = cinema.rows * cinema.seats_per_row
 
+            booked_seats_percentage = (booked_seats / total_seats) * 100
             if cinema.id not in cinema_map:
                 cinema_map[cinema.id] = {
                     "id": cinema.id,
@@ -100,6 +103,7 @@ class MovieSlotsPerCinemaSerializer(serializers.ModelSerializer):
                     "date_time": slot.date_time,
                     "price": slot.price,
                     "language": {"name": slot.language.name},
+                    "booked_seats_percentage": booked_seats_percentage,
                 }
             )
 
