@@ -8,7 +8,7 @@ from apps.users.managers import UserManager
 phone_number_validator = RegexValidator(
     r"^[6-9]\d{9}$",
     message="Enter a valid phone number in the format 9876543210 (10 digits starting with 6, 7, 8, or 9)",
-    code="Invalid phone number",
+    code="invalid_phone_number",
 )
 
 

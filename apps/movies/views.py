@@ -1,7 +1,7 @@
 from datetime import datetime, time
 
 from django.core.exceptions import ValidationError
-from django.db.models import Prefetch
+from django.db.models import Count, Prefetch, Q
 from django.utils import timezone
 from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
@@ -9,6 +9,7 @@ from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import AllowAny
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from apps.bookings.models import Booking
 from apps.slots.models import Slot
 
 from .filters import MovieFilter
@@ -140,6 +141,12 @@ class MovieSlotsPerCinemaListView(RetrieveAPIView):
             .select_related(
                 "cinema",
                 "language",
+            )
+            .annotate(
+                booked_seats=Count(
+                    "bookings__seats",
+                    filter=Q(bookings__status=Booking.Status.BOOKED),
+                )
             )
             .order_by("date_time")
         )

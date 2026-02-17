@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from apps.base.serializers import GenreSerializer, LanguageSerializer
-from apps.bookings.models import Booking, Seat
 
 from .models import Movie
 
@@ -83,9 +82,7 @@ class MovieSlotsPerCinemaSerializer(serializers.ModelSerializer):
         slots = getattr(movie, "active_slots", [])
         for slot in slots:
             cinema = slot.cinema
-            booked_seats = Seat.objects.filter(
-                booking__slot__id=slot.id, booking__status=Booking.Status.BOOKED
-            ).count()
+            booked_seats = getattr(slot, "booked_seats", 0)
             total_seats = cinema.rows * cinema.seats_per_row
 
             booked_seats_percentage = (booked_seats / total_seats) * 100

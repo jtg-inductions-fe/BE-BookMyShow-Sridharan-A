@@ -7,10 +7,10 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny
 
+from apps.base.pagination import BaseCursorPagination
 from apps.slots.models import Slot
 
 from .models import Cinema
-from .pagination import CinemaCursorPagination
 from .serializers import CinemaSerializer, CinemaSlotSerializer
 
 
@@ -53,7 +53,7 @@ class CinemaListView(ListAPIView):
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ("city__name",)
-    pagination_class = CinemaCursorPagination
+    pagination_class = BaseCursorPagination
 
 
 class CinemaDetailsView(RetrieveAPIView):
