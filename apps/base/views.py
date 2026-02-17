@@ -25,7 +25,6 @@ class LanguageListView(BaseListView):
             "previous": null,
             "results": [
                 {
-                    "id": int,
                     "name": string
                 }
             ]
@@ -51,7 +50,6 @@ class GenreListView(BaseListView):
             "previous": null,
             "results": [
                 {
-                    "id": int,
                     "name": string
                 }
             ]
@@ -77,7 +75,6 @@ class CityListView(BaseListView):
             "previous": null,
             "results": [
                 {
-                    "id": int,
                     "name": string
                 }
             ]

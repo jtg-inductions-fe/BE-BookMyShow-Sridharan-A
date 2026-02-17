@@ -145,6 +145,7 @@ class MovieSlotsPerCinemaListView(RetrieveAPIView):
             .annotate(
                 booked_seats=Count(
                     "bookings__seats",
+                    distinct=True,
                     filter=Q(bookings__status=Booking.Status.BOOKED),
                 )
             )
