@@ -1,15 +1,17 @@
 from datetime import datetime, time
 
 from django.core.exceptions import ValidationError
-from django.db.models import Prefetch
+from django.db.models import Count, Prefetch, Q
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework.permissions import AllowAny
 
 from apps.base.pagination import BaseCursorPagination
+from apps.bookings.models import Booking
 from apps.slots.models import Slot
 
+from .filters import CinemaFilter
 from .models import Cinema
 from .serializers import CinemaSerializer, CinemaSlotSerializer
 
@@ -52,7 +54,7 @@ class CinemaListView(ListAPIView):
     serializer_class = CinemaSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ("city__name",)
+    filterset_class = CinemaFilter
     pagination_class = BaseCursorPagination
 
 
@@ -85,6 +87,7 @@ class CinemaDetailsView(RetrieveAPIView):
 
     serializer_class = CinemaSlotSerializer
     permission_classes = [AllowAny]
+
     lookup_field = "slug"
 
     def get_queryset(self):
@@ -117,6 +120,13 @@ class CinemaDetailsView(RetrieveAPIView):
             .select_related(
                 "movie",
                 "language",
+            )
+            .annotate(
+                booked_seats=Count(
+                    "bookings__seats",
+                    distinct=True,
+                    filter=Q(bookings__status=Booking.Status.BOOKED),
+                )
             )
             .order_by("date_time")
         )

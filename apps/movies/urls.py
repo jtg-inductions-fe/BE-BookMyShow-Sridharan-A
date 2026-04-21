@@ -6,11 +6,11 @@ from .views import (
     MovieViewSet,
 )
 
-router = routers.SimpleRouter()
-router.register(r"", MovieViewSet)
+router = routers.SimpleRouter(trailing_slash=False)
+router.register(r"movies", MovieViewSet)
 urlpatterns = [
     path(
-        "<slug:slug>/slots/",
+        "movies/<slug:slug>/slots",
         MovieSlotsPerCinemaListView.as_view(),
         name="movie_slots_per_cinemas",
     ),

@@ -7,6 +7,7 @@ from django_filters import rest_framework as filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.generics import RetrieveAPIView
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from apps.bookings.models import Booking
@@ -63,8 +64,7 @@ class MovieViewSet(ReadOnlyModelViewSet):
     """
 
     queryset = (
-        Movie.objects.filter(slots__date_time__gte=timezone.now())
-        .distinct()
+        Movie.objects.all()
         .prefetch_related("language", "genre")
         .order_by("-release_date")
     )
@@ -79,6 +79,18 @@ class MovieViewSet(ReadOnlyModelViewSet):
     def filterset_class(self) -> type[filters.FilterSet] | None:
         if self.action == "list":
             return MovieFilter
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        latest = request.query_params.get("latest_movies")
+
+        if latest == "true":
+            queryset = queryset[:5]
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+
+        return super().list(request, *args, **kwargs)
 
 
 class MovieSlotsPerCinemaListView(RetrieveAPIView):
@@ -113,6 +125,7 @@ class MovieSlotsPerCinemaListView(RetrieveAPIView):
     def get_queryset(self):
         date = self.request.query_params.get("date")
         today = timezone.localdate()
+        city = self.request.query_params.get("city")
 
         if date:
             selected_date = datetime.strptime(date, "%Y-%m-%d").date()
@@ -149,8 +162,12 @@ class MovieSlotsPerCinemaListView(RetrieveAPIView):
                     filter=Q(bookings__status=Booking.Status.BOOKED),
                 )
             )
-            .order_by("date_time")
         )
+
+        if city:
+            active_slots = active_slots.filter(cinema__city__name__iexact=city)
+
+        active_slots = active_slots.order_by("date_time")
 
         return Movie.objects.prefetch_related(
             Prefetch(

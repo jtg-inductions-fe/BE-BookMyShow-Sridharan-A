@@ -1,4 +1,5 @@
 import django_filters
+from django.utils import timezone
 from django_filters import rest_framework as filters
 
 from .models import Movie
@@ -20,6 +21,14 @@ class MovieFilter(filters.FilterSet):
         field_name="release_date", lookup_expr="gte"
     )
 
+    city = filters.CharFilter(method="filter_by_city")
+
+    def filter_by_city(self, queryset, name, value):
+        return queryset.filter(
+            slots__date_time__gte=timezone.now(),
+            slots__cinema__city__name__iexact=value,
+        ).distinct()
+
     class Meta:
         model = Movie
-        fields = ["language", "genre", "release_date"]
+        fields = ["language", "genre", "release_date", "city"]
