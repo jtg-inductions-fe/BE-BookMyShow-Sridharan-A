@@ -47,6 +47,7 @@ urlpatterns = [
                 path("cinemas/", include("apps.cinemas.urls")),
                 path("slots/", include("apps.slots.urls")),
                 path("bookings/", include("apps.bookings.urls")),
+                path("filters/", include("apps.base.urls")),
             ]
         ),
     ),
