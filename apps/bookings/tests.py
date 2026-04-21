@@ -62,7 +62,7 @@ class TestBookingModel(APITestCase):
 
     def authenticate(self):
         res = self.client.post(
-            "/api/auth/login/", {"email": self.user.email, "password": "user@123"}
+            "/api/auth/login", {"email": self.user.email, "password": "user@123"}
         )
         access = res.data["access"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access}")
@@ -71,7 +71,7 @@ class TestBookingModel(APITestCase):
         self.authenticate()
 
         res = self.client.post(
-            "/api/bookings/",
+            "/api/bookings",
             {
                 "slot_id": self.slot.id,
                 "seats": [{"row": 4, "number": 3}, {"row": 4, "number": 4}],
@@ -84,11 +84,11 @@ class TestBookingModel(APITestCase):
     def test_booking_list(self):
         self.authenticate()
 
-        res = self.client.get("/api/bookings/history/")
+        res = self.client.get("/api/bookings/history")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_cancel_booking(self):
         self.authenticate()
 
-        res = self.client.patch(f"/api/bookings/{self.booking.id}/cancel/")
+        res = self.client.patch(f"/api/bookings/{self.booking.id}/cancel")
         self.assertEqual(res.status_code, status.HTTP_200_OK)

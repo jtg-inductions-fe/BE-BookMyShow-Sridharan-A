@@ -27,7 +27,7 @@ class TestUserAuth(APITestCase):
             "phone_number": "9876543210",
         }
 
-        res = self.client.post("/api/auth/register/", data)
+        res = self.client.post("/api/auth/register", data)
 
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         self.assertEqual(res.data["message"], "User registered successfully")
@@ -40,7 +40,7 @@ class TestUserAuth(APITestCase):
 
     def test_register_email_normalized(self):
         self.client.post(
-            "/api/auth/register/",
+            "/api/auth/register",
             {
                 "email": "UPPER@gmail.COM",
                 "password": "user@123",
@@ -52,7 +52,7 @@ class TestUserAuth(APITestCase):
 
     def test_register_duplicate_email(self):
         res = self.client.post(
-            "/api/auth/register/",
+            "/api/auth/register",
             {
                 "email": self.user.email,
                 "password": "user@123",
@@ -66,7 +66,7 @@ class TestUserAuth(APITestCase):
 
     def test_login_success(self):
         res = self.client.post(
-            "/api/auth/login/",
+            "/api/auth/login",
             {
                 "email": self.user.email,
                 "password": "user@123",
@@ -79,7 +79,7 @@ class TestUserAuth(APITestCase):
 
     def test_login_wrong_password(self):
         res = self.client.post(
-            "/api/auth/login/",
+            "/api/auth/login",
             {
                 "email": self.user.email,
                 "password": "wrongpassword",
@@ -92,7 +92,7 @@ class TestUserAuth(APITestCase):
 
     def authenticate(self):
         res = self.client.post(
-            "/api/auth/login/",
+            "/api/auth/login",
             {
                 "email": self.user.email,
                 "password": "user@123",
@@ -107,7 +107,7 @@ class TestUserAuth(APITestCase):
     def test_get_user_profile(self):
         self.authenticate()
 
-        res = self.client.get("/api/auth/user/")
+        res = self.client.get("/api/auth/user")
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data["email"], self.user.email)
@@ -117,7 +117,7 @@ class TestUserAuth(APITestCase):
         self.authenticate()
 
         res = self.client.patch(
-            "/api/auth/user/",
+            "/api/auth/user",
             {
                 "first_name": "Updated",
                 "phone_number": "9999999999",
@@ -131,5 +131,5 @@ class TestUserAuth(APITestCase):
         self.assertEqual(self.user.phone_number, "9999999999")
 
     def test_user_profile_requires_authentication(self):
-        res = self.client.get("/api/auth/user/")
+        res = self.client.get("/api/auth/user")
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)

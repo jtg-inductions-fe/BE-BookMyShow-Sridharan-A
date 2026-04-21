@@ -55,21 +55,21 @@ class TestSlotModel(APITestCase):
 
     def authenticate(self):
         res = self.client.post(
-            "/api/auth/login/", {"email": self.user.email, "password": "user@123"}
+            "/api/auth/login", {"email": self.user.email, "password": "user@123"}
         )
         access = res.data["access"]
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {access}")
 
     def test_slot_booked_seats(self):
         id = self.slot.id
-        res = self.client.get(f"/api/slots/{id}/")
+        res = self.client.get(f"/api/slots/{id}")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_booking_seats(self):
         self.authenticate()
 
         res = self.client.post(
-            "/api/bookings/",
+            "/api/bookings",
             {
                 "slot_id": self.slot.id,
                 "seats": [{"row": 4, "number": 3}, {"row": 4, "number": 4}],
