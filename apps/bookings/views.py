@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Booking
+from .pagination import BookingCursorPagination
 from .serializers import BookingCreateSerializer, BookingSerializer
 
 
@@ -93,9 +94,13 @@ class UserBookingListView(APIView):
             .order_by("-created_at")
         )
 
-        return Response(
-            BookingSerializer(bookings, many=True).data, status=status.HTTP_200_OK
-        )
+        paginator = BookingCursorPagination()
+
+        paginated_qs = paginator.paginate_queryset(bookings, request)
+
+        serializer = BookingSerializer(paginated_qs, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
 
 
 class BookingCancelView(APIView):

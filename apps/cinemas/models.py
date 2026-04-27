@@ -1,3 +1,4 @@
+from django.core import validators
 from django.db import models
 from django.utils.text import slugify
 
@@ -18,8 +19,14 @@ class Cinema(TimeStampModel):
 
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=300)
-    rows = models.PositiveIntegerField()
-    seats_per_row = models.PositiveIntegerField()
+    rows = models.PositiveIntegerField(
+        validators=[validators.MinValueValidator(5)],
+        help_text="Minimum 5 rows are required",
+    )
+    seats_per_row = models.PositiveIntegerField(
+        validators=[validators.MinValueValidator(5)],
+        help_text="Minimum 5 seats per row are required",
+    )
     city = models.ForeignKey(City, on_delete=models.CASCADE, related_name="cinemas")
     slug = models.SlugField(unique=True, blank=True)
 

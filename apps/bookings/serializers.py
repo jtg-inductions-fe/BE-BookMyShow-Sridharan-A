@@ -1,6 +1,8 @@
+from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
 from apps.slots.models import Slot
 
@@ -36,11 +38,31 @@ class BookingSerializer(serializers.ModelSerializer):
 
     seats = SeatSerializer(many=True)
     slot_id = serializers.IntegerField(source="slot.id")
+    movie = serializers.CharField(source="slot.movie.name")
+    cinema = serializers.CharField(source="slot.cinema.name")
+    date_time = serializers.CharField(source="slot.date_time")
+    language = serializers.CharField(source="slot.language")
+    total_seats = serializers.SerializerMethodField()
     total_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Booking
-        fields = ["id", "slot_id", "status", "created_at", "seats", "total_price"]
+        fields = [
+            "id",
+            "slot_id",
+            "status",
+            "created_at",
+            "seats",
+            "movie",
+            "cinema",
+            "date_time",
+            "language",
+            "total_seats",
+            "total_price",
+        ]
+
+    def get_total_seats(self, booking):
+        return booking.seats.count()
 
     def get_total_price(self, booking):
         return booking.seats.count() * booking.slot.price
@@ -74,22 +96,27 @@ class BookingCreateSerializer(serializers.Serializer):
         slot_id = validated_data["slot_id"]
         seats_data = validated_data["seats"]
 
-        with transaction.atomic():
-            slot = Slot.objects.select_for_update().get(id=slot_id)
-            booking = Booking.objects.create(
-                user=user,
-                slot=slot,
-                status=Booking.Status.BOOKED,
-            )
+        try:
+            with transaction.atomic():
+                slot = Slot.objects.select_for_update().get(id=slot_id)
 
-            for seat in seats_data:
-                seat_obj = Seat(
-                    booking=booking,
-                    row=seat["row"],
-                    number=seat["number"],
+                booking = Booking.objects.create(
+                    user=user,
+                    slot=slot,
+                    status=Booking.Status.BOOKED,
                 )
-                seat_obj.save()
 
-            booking.save()
+                for seat in seats_data:
+                    seat_obj = Seat(
+                        booking=booking,
+                        row=seat["row"],
+                        number=seat["number"],
+                    )
+                    seat_obj.save()
 
-        return booking
+                return booking
+
+        except DjangoValidationError as err:
+            raise ValidationError(
+                {"detail": "Some seats are already booked. Please try again."}
+            ) from err

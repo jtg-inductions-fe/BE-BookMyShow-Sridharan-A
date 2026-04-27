@@ -102,7 +102,7 @@ class MovieSlotsPerCinemaSerializer(serializers.ModelSerializer):
                     "id": slot.id,
                     "date_time": slot.date_time,
                     "price": slot.price,
-                    "language": {"name": slot.language.name},
+                    "language": slot.language.name,
                     "booked_seats_percentage": booked_seats_percentage,
                 }
             )

@@ -43,11 +43,11 @@ class TestCinemaModel(APITestCase):
         )
 
     def test_cinema_list_success(self):
-        res = self.client.get("/api/cinemas/")
+        res = self.client.get("/api/cinemas")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_cinema_list_filters(self):
-        res = self.client.get("/api/cinemas/?city__name=Test city")
+        res = self.client.get("/api/cinemas?city__name=Test city")
         cinema_names = [cinema["name"] for cinema in res.data["results"]]
 
         self.assertIn("Test Cinema", cinema_names)
@@ -55,7 +55,7 @@ class TestCinemaModel(APITestCase):
 
     def test_cinema_details_and_active_slots(self):
         slug = self.cinema.slug
-        res = self.client.get(f"/api/cinemas/{slug}/slots/")
+        res = self.client.get(f"/api/cinemas/{slug}/slots")
         slot = res.data["movies"][0]["slots"][0]
 
         self.assertGreaterEqual(slot["date_time"], timezone.localtime())

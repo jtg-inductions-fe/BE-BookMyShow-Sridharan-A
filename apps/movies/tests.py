@@ -52,23 +52,23 @@ class TestMovieModel(APITestCase):
         )
 
     def test_movie_list_success(self):
-        res = self.client.get("/api/movies/")
+        res = self.client.get("/api/movies")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_movie_list_returns_active_movies(self):
-        res = self.client.get("/api/movies/")
+        res = self.client.get("/api/movies")
         movie_names = [movie["name"] for movie in res.data["results"]]
         self.assertIn("Movie Active", movie_names)
         self.assertNotIn("Movie NotActive", movie_names)
 
     def test_movie_list_filters(self):
-        genre_res = self.client.get("/api/movies/?genre=Action")
+        genre_res = self.client.get("/api/movies?genre=Action")
         movie_names = [movie["name"] for movie in genre_res.data["results"]]
 
         self.assertIn("Movie Active", movie_names)
         self.assertNotIn("Different Genre", movie_names)
 
-        language_res = self.client.get("/api/movies/?language=English")
+        language_res = self.client.get("/api/movies?language=English")
         movie_names = [movie["name"] for movie in language_res.data["results"]]
 
         self.assertIn("Movie Active", movie_names)
@@ -76,14 +76,14 @@ class TestMovieModel(APITestCase):
 
     def test_movie_details_success(self):
         slug = self.movie_active.slug
-        res = self.client.get(f"/api/movies/{slug}/")
+        res = self.client.get(f"/api/movies/{slug}")
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data["name"], "Movie Active")
 
     def test_movie_slots_returns_active_slots(self):
         slug = self.movie_active.slug
-        res = self.client.get(f"/api/movies/{slug}/slots/")
+        res = self.client.get(f"/api/movies/{slug}/slots")
         slot = res.data["cinemas"][0]["slots"][0]
 
         self.assertGreaterEqual(slot["date_time"], timezone.localtime())

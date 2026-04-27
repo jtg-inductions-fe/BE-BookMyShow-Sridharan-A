@@ -51,7 +51,7 @@ class Slot(TimeStampModel):
             )
 
         prev_slot = (
-            Slot.objects.filter(cinema=self.cinema, date_time__lt=self.date_time)
+            Slot.objects.filter(cinema=self.cinema, date_time__lte=self.date_time)
             .exclude(pk=self.pk)
             .order_by("-date_time")
             .first()

@@ -1,12 +1,10 @@
 from rest_framework import generics, permissions
 
 from apps.base.models import City, Genre, Language
-from apps.base.pagination import BaseCursorPagination
 from apps.base.serializers import CitySerializer, GenreSerializer, LanguageSerializer
 
 
 class BaseListView(generics.ListAPIView):
-    pagination_class = BaseCursorPagination
     permission_classes = [permissions.AllowAny]
 
 
@@ -33,6 +31,7 @@ class LanguageListView(BaseListView):
 
     queryset = Language.objects.all()
     serializer_class = LanguageSerializer
+    pagination_class = None
 
 
 class GenreListView(BaseListView):
@@ -58,6 +57,7 @@ class GenreListView(BaseListView):
 
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    pagination_class = None
 
 
 class CityListView(BaseListView):
@@ -83,3 +83,4 @@ class CityListView(BaseListView):
 
     queryset = City.objects.all()
     serializer_class = CitySerializer
+    pagination_class = None
